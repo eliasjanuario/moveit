@@ -2,6 +2,7 @@ import Head from 'next/head'
 
 import { Profile } from '../components/Profile'
 import { Countdown } from '../components/Countdown'
+import { ChallengeBox } from '../components/ChallengeBox'
 import { Experiencebar } from '../components/ExperienceBar'
 import { CompletedChallenges } from '../components/CompletedChallenges'
 
@@ -22,7 +23,9 @@ export default function Home() {
           <CompletedChallenges />
           <Countdown />
         </div>
-        <div></div>
+        <div>
+          <ChallengeBox />
+        </div>
       </section>
     </div>
   )
