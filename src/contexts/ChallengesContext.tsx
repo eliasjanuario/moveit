@@ -1,6 +1,8 @@
-import { createContext, ReactNode, useState } from 'react'
+import { createContext, ReactNode, useState, useContext } from 'react';
 
 import challenges from '../../challenges.json'
+
+import { CountdownContext } from './CountdownContext'
 
 type ChallengesProviderProps = {
   children: ReactNode
@@ -15,11 +17,12 @@ type Challenge = {
 type ChallengeContextData = {
   level: number 
   activeChallenge: Challenge
-  currenteExperience: number  
+  currentExperience: number  
   challengesCompleted: number 
   experienceToNextLevel: number 
   levelUp: () => void 
   resetChallenge: () => void 
+  completeChallenge: () => void 
   startNewChallenge: () => void 
 }
 
@@ -28,10 +31,10 @@ export const ChallengesContext = createContext({} as ChallengeContextData)
 export function ChallengesProvider({ children }: ChallengesProviderProps) {
   const [level, setLevel] = useState(1)
   const [activeChallenge, setActiveChallenge] = useState(null)
-  const [currenteExperience, setCurrenteExperience] = useState(0)
+  const [currentExperience, setCurrentExperience] = useState(0)
   const [challengesCompleted, setChallengesCompleted] = useState(0)
 
-  const experienceToNextLevel = Math.pow((level + 1 * 4), 2)
+  const experienceToNextLevel = Math.pow((level + 1) * 4, 2)
 
   function levelUp() {
     setLevel(level + 1)
@@ -47,6 +50,24 @@ export function ChallengesProvider({ children }: ChallengesProviderProps) {
     setActiveChallenge(null)
   }
 
+  function completeChallenge() {
+    if (!activeChallenge) {
+      return;
+    }
+
+    const { amount } = activeChallenge
+    let finalExperience = currentExperience + amount
+
+    if (finalExperience >= experienceToNextLevel) {
+      finalExperience = finalExperience - experienceToNextLevel
+      levelUp()
+    }
+
+    setCurrentExperience(finalExperience)
+    setActiveChallenge(null)
+    setChallengesCompleted(challengesCompleted + 1)
+  }
+
   return (
     <ChallengesContext.Provider 
       value={
@@ -56,7 +77,8 @@ export function ChallengesProvider({ children }: ChallengesProviderProps) {
           resetChallenge,
           activeChallenge,
           startNewChallenge, 
-          currenteExperience, 
+          completeChallenge,
+          currentExperience, 
           challengesCompleted,
           experienceToNextLevel
         }
